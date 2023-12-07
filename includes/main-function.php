@@ -4,9 +4,7 @@
  * main function 
  */
 
- ?>
-
-<?php
+ 
  function urc_wp_security_init(){
    ?>
     <div class="wrap">
