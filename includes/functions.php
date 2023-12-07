@@ -10,4 +10,4 @@
  function urc_wp_enqueue_scripts_func(){
     wp_enqueue_style('style',WP_DIR_PATH.'assets/style.css');
  }
- require_once('main-function.php');
+ //require_once('main-function.php');
