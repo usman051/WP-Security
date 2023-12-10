@@ -4,7 +4,7 @@ Plugin Name: WP Good to Go
 Plugin URI: https://github.com/MuhammadUsman0304/wp-security.git
 Description: Plugin to enhance WP security 
 Version: 1.0.0
-Author: Muhammad Usman
+Author: Sabith Ahmed & TEAM
 Tags: wp security, security, enable/disable xmlrpc, xmlrpc, comments, turn off comments, 
 Author URI: https://www.linkedin.com/in/muhammad-usman-b3439218b/
 License: GPLv3 or later
@@ -31,17 +31,62 @@ class WP_Good_To_Go {
 
    private function add_actions() {
       add_action('admin_menu',[$this, 'wpgtg_admin_menu']);
+      add_action('admin_enqueue_scripts',[$this,'wpgtg_load_scripts']);
+      add_action('wp_ajax_scan_ajax_action',[$this, 'wpgtg_scan_ajax_action']);
    }
 
    public function wpgtg_admin_menu() {
       add_menu_page('WP Good To Go','WP Good To Go', 'manage_options', 'wpgtg', [$this, 'wpgtg_dashboard']);
    }
 
-   public function wpgtg_dashboard() {
-      $scanner  = new WP_GTG_Scanner();
-      echo 'found scans: '. implode( ',', $scanner->scans);
+   public function wpgtg_load_scripts(){
+      wp_enqueue_style('styles',WPGTG_DIR_URL.'assets/style.css');
+      wp_enqueue_script('script',WPGTG_DIR_URL.'assets/script.js',['jquery'],1.0,true);
+      
    }
 
+   public function wpgtg_dashboard() {
+     // $scanner  = new WP_GTG_Scanner();
+      //echo 'found scans: '. implode( ',', $scanner->scans) . "<br>";
+      include_once 'templates/main-template.php';
+   }
+
+   public function wpgtg_scan_ajax_action(){
+      $scanner = new WP_GTG_Scanner();
+      
+      $completedScans = 0;
+      
+    echo "<table class='wp-list-table widefat fixed striped table-view-list posts'>
+    <thead>
+    <tr>
+    <th> Scans </th>
+    <th> Action </th>
+    </tr>
+    </thead>
+    <tbody>
+    
+    ";
+
+      foreach ($scanner->scans as $scan) {
+         
+    echo "
+    
+    <tr>
+    <td>$scan</td>
+    </tr>
+    
+    " ;
+   
+        $completedScans++;
+        //sleep(2); 
+        
+        echo "<script>updateProgress($completedScans);</script>";
+        ob_flush();
+       
+      }
+      echo " </tbody></table>";
+     wp_die(); 
+   }
 }
 
 function wpgtg_autoloader($class) {
