@@ -51,42 +51,51 @@ class WP_Good_To_Go {
       include_once 'templates/main-template.php';
    }
 
-   public function wpgtg_scan_ajax_action(){
+   public function wpgtg_scan_ajax_action() {
       $scanner = new WP_GTG_Scanner();
-      
+      $totalScans = count($scanner->scans);
       $completedScans = 0;
-      
-    echo "<table class='wp-list-table widefat fixed striped table-view-list posts'>
-    <thead>
-    <tr>
-    <th> Scans </th>
-    <th> Action </th>
-    </tr>
-    </thead>
-    <tbody>
-    
-    ";
-
+  
+      ob_start(); 
+  
+      echo "<table class='wp-list-table widefat fixed striped table-view-list posts'>
+          <thead>
+              <tr>
+                  <th>Scans</th>
+                  <th>%</th>
+                  <th>Action</th>
+              </tr>
+          </thead>
+          <tbody>";
+          
       foreach ($scanner->scans as $scan) {
-         
-    echo "
-    
-    <tr>
-    <td>$scan</td>
-    </tr>
-    
-    " ;
-   
-        $completedScans++;
-        //sleep(2); 
-        
-        echo "<script>updateProgress($completedScans);</script>";
         ob_flush();
-       
+        flush();
+          sleep(1); 
+  
+          $completedScans++;
+          $progressPercentage = round(($completedScans / $totalScans) * 100);
+  
+          echo "<tr>
+                  <td>$scan</td>
+                  <td>$progressPercentage%</td>
+              </tr>";
+  
+          ob_flush();
+          flush();
+          exit();
       }
-      echo " </tbody></table>";
-     wp_die(); 
-   }
+  
+      echo "</tbody></table>";
+      echo 'Scans completed!';
+  
+      ob_end_flush(); 
+      wp_die();
+  }
+  
+  
+  
+
 }
 
 function wpgtg_autoloader($class) {
